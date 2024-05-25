@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            /* background-image: url("{{ url_for('static', filename='file2.jpg') }}"); */
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.8); /* Add an overlay to make the content more readable */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 35, 233, 0.975);
+            transition: box-shadow 0.3s ease;
+            overflow: hidden;
+        }
+
+        .container:hover {
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            color: #3498db;
+            margin-bottom: 20px;
+        }
+
+        /* Add styles for the group boxes */
+        .group-box {
+            display: inline-block;
+            width: 220px;
+            height: 60px;
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid #3498db;
+            cursor: pointer;
+            position: relative;
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 5px rgba(0, 35, 233, 0.975);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+            transform-origin: center bottom;
+        }
+
+        .group-box:hover {
+            background-color: #2a5fd9;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transform: scale(1.05);
+        }
+
+        .folder-icon {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 20px;
+            height: 20px;
+            background-color: #fff;
+            border-radius: 3px;
+            border: 2px solid #3498db;
+        }
+
+        .folder-text {
+            margin: 25px;
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        button {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 10px;
+            transition: background-color 0.3s ease;
+            display: block;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            margin: 5px 0;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: calc(100% - 20px);
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .logo {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 65px;
+            height: auto;
+        }
+
+        /* Animation for Header */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Apply animation to header */
+        .animated-header {
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            background-color: #437495;
+            color: #fff;
+            font-size: 24px;
+            font-weight: bold;
+            border-bottom: 2px solid #2980b9;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Logo -->
+    <img src="{{ url_for('static', filename='PII_logo.jpg') }}" alt="Logo" class="logo">
+    
+    <!-- Header -->
+    <div class="header animated-header">
+        PII - Personal Image Identifier
+    </div>
+
+    <div class="container">
+        {% include 'menu.html' %}
+        
+        <h2><a href="/profile_info">Profile Info</a></h2>
+        
+        <div>
+            <button onclick="showCreateGroupForm()">Create Group</button>
+            <div id="createGroupForm" style="display: none;">
+                <input type="text" id="groupNameInput" placeholder="Enter group name">
+                <button onclick="createGroup()">Submit</button>
+            </div>
+        </div>
+
+        <div>
+            <button onclick="showJoinGroupForm()">Join Group</button>
+            <div id="joinGroupForm" style="display: none;">
+                <input type="text" id="joinGroupCodeInput" placeholder="Enter group code">
+                <button onclick="joinGroup()">Join</button>
+            </div>
+        </div>
+
+        <h2>Your Groups:</h2>
+        <div id="groupList">
+            <!-- Display the user's groups here -->
+        </div>
+    </div>
+
+    <script>
+        // JavaScript function to show the create group form
+        function showCreateGroupForm() {
+            var createGroupForm = document.getElementById('createGroupForm');
+            createGroupForm.style.display = 'block';
+        }
+
+        // JavaScript function to create a group
+        function createGroup() {
+            var groupNameInput = document.getElementById('groupNameInput');
+            var groupName = groupNameInput.value;
+            if (groupName) {
+                // Call a Flask route to create the group in the backend
+                createGroupInBackend(groupName);
+
+                // Hide the createGroupForm and clear the input field
+                var createGroupForm = document.getElementById('createGroupForm');
+                createGroupForm.style.display = 'none';
+                groupNameInput.value = '';
+            } else {
+                alert('Please enter a group name.');
+            }
+        }
+
+        // AJAX function to send the group name to Flask backend
+        function createGroupInBackend(groupName) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/create_group", true);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhr.onload = function () {
+                // Update the group list on the frontend
+                updateGroupList();
+            };
+            xhr.send(JSON.stringify({ groupName: groupName }));
+        }
+
+        // AJAX function to fetch and update the user's group list
+        function updateGroupList() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "/get_user_groups_with_names", true);
+            xhr.onload = function () {
+                // Update the group list on the frontend
+                var groupList = document.getElementById("groupList");
+                groupList.innerHTML = "";
+                var groups = JSON.parse(xhr.responseText);
+                groups.forEach(function (group) {
+                    // Create a folder-like box for each group
+                    var groupBox = document.createElement("div");
+                    groupBox.className = "group-box";
+
+                    // Add folder icon
+                    var folderIcon = document.createElement("div");
+                    folderIcon.className = "folder-icon";
+                    groupBox.appendChild(folderIcon);
+
+                    // Add folder text with the group name
+                    var folderText = document.createElement("div");
+                    folderText.className = "folder-text";
+                    folderText.textContent = group.name; // Display the group name instead of unique code
+                    groupBox.appendChild(folderText);
+
+                    groupBox.onclick = function () {
+                        // Navigate to the page where images can be uploaded for this group
+                        window.location.href = "/upload_images?group=" + group.unique_code;
+                    };
+                    groupList.appendChild(groupBox);
+                });
+            };
+            xhr.send();
+        }
+
+        // ...
+        function showJoinGroupForm(){
+            var joinGroupForm = document.getElementById('joinGroupForm');
+            joinGroupForm.style.display = 'block';
+        }
+
+        // Javascript function to join a group
+        function joinGroup() {
+            var joinGroupCodeInput = document.getElementById('joinGroupCodeInput');
+            var groupCode = joinGroupCodeInput.value;
+            if (groupCode) {
+                // call a flask route to join the group in the backend
+                joinGroupInBackend(groupCode);
+
+                // Hide the joingroupcode and clear the input field
+                var joinGroupForm = document.getElementById('joinGroupForm');;
+                joinGroupForm.style.display = 'none';
+                joinGroupCodeInput.value = '';
+            }else{
+                alert('Please enter a group code.');
+            }
+        }
+
+        //AJAX function to send the group code to flask backend for joining
+        function joinGroupInBackend(groupCode) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/join_group", true);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhr.onload = function () {
+                var response = JSON.parse(xhr.responseText);
+                if (response.status === 'success') {
+                    alert('Successfully joined the group.');
+                    // Update the group list on the frontend after joining
+                    updateGroupList();
+                } else {
+                    alert('Error: ' + response.message);
+                }
+            };
+            xhr.send(JSON.stringify({ groupCode: groupCode }));
+        }
+
+
+        // Call the function to initially populate the group list
+        updateGroupList();
+    </script>
+</body>
+</html>

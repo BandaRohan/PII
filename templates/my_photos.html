@@ -1,0 +1,8 @@
+{% for group_unique_code, matched_images in matched_images_by_group.items() %}
+    <h2>Group {{ group_unique_code }}</h2>
+    <ul>
+    {% for matched_image in matched_images %}
+        <li><img src="{{ url_for('get_uploaded_image', filename=matched_image['image_uuid']) }}"></li>
+    {% endfor %}
+    </ul>
+{% endfor %}

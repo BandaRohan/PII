@@ -1,0 +1,144 @@
+<!-- upload_images.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        /* Add your specific styles for the upload_images page here */
+
+        /* Container Styles */
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #fff; /* Container background color */
+            padding: 20px;
+            border-radius: 5px; /* Rounded corners for the container */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Box shadow for a subtle lift effect */
+        }
+
+        /* Form Styles */
+        form {
+            margin-top: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="file"] {
+            margin-bottom: 10px;
+        }
+
+        input[type="submit"] {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Image Grid Styles */
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            padding: 10px;
+        }
+
+        .image-item {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            overflow: hidden;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+
+        .image-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Maintain aspect ratio and cover the entire container */
+            display: block;
+        }
+
+        /* Image Modal Styles */
+        .image-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            cursor: pointer;
+            border-radius: 5px; /* Rounded corners for the modal */
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% include 'menu.html' %}
+        
+        <!-- Add content specific to the upload_images page -->
+        <h2>Upload Images for Group: {{group_name}}</h2>
+        
+        <!-- Form for uploading images -->
+        <form method="post" action="/upload_images" enctype="multipart/form-data">
+            <input type="hidden" name="group" value="{{group}}">
+            <label for="images">Select Images:</label>
+            <input type="file" name="images" accept=".png, .jpg, .jpeg" multiple>
+            <input type="submit" value="Upload Images">
+        </form>
+
+        <!-- Display messages or errors -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div>
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Display images from the database in a grid -->
+        <div class="image-grid">
+            {% for image in images %}
+                <div class="image-item" onclick="showImageModal('{{ url_for('get_uploaded_image', filename=image['filename']) }}')">
+                    <img src="{{ url_for('get_uploaded_image', filename=image['filename']) }}" alt="Image">
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- ... other content for uploading images ... -->
+
+        <!-- Image Modal -->
+        <div id="imageModal" class="image-modal" onclick="hideImageModal()">
+            <img id="modalContent" class="modal-content">
+        </div>
+
+        <script>
+            // JavaScript functions to show and hide the image modal
+            function showImageModal(imageSrc) {
+                document.getElementById('modalContent').src = imageSrc;
+                document.getElementById('imageModal').style.display = 'flex';
+            }
+
+            function hideImageModal() {
+                document.getElementById('imageModal').style.display = 'none';
+            }
+        </script>
+    </div>
+</body>
+</html>

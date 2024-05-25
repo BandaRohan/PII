@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            /* background-image: url("{{ url_for('static', filename='login2.jpg') }}"); Add your background image URL here */
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        
+    </style>
+</head>
+<body>
+    
+    
+    <div class="container">
+        <header>
+            <h1>Welcome to Person Image Identifier</h1>
+        </header>
+        
+        <h2>Login</h2>
+        <form method="post" action="/login">
+            <label for="identifier">Username or Email:</label>
+            <input type="text" name="identifier" required><br>
+
+            <label for="password">Password:</label>
+            <input type="password" name="password" required><br>
+
+            <input type="submit" value="Login">
+        </form>
+
+        <p>Don't have an account? <a href="/signup">Sign Up</a></p>
+        
+        <p>Forgot your password? <a href="/forgot_password">Reset it here</a></p>
+
+        {% if error_message %}
+            <p class="error-message" id="errorMessage">{{ error_message }}</p>
+            <script>
+                // JavaScript to hide the error message after 5 seconds
+                setTimeout(function() {
+                    var errorMessage = document.getElementById('errorMessage');
+                    errorMessage.style.display = 'none';
+                }, 5000);
+            </script>
+        {% endif %}
+    </div>
+</body>
+</html>

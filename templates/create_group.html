@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Add any specific styles for dashboard if needed -->
+</head>
+<body>
+    <div class="container">
+        {% include 'menu.html' %}
+        
+        <!-- Add content specific to the dashboard -->
+        <h2>Welcome, {{ user_info['first_name'] }} {{ user_info['last_name'] }}!</h2>
+
+        <!-- Add a button to start the video stream -->
+        <button class="btn btn-primary" id="startWebcam">Start Video</button>
+
+    </div>
+    <script>
+        document.getElementById('startWebcam').addEventListener('click', function() {
+            fetch('/start_video', { method: "POST" })
+                .then(response => response.text())
+                .then(data => console.log(data))
+                .catch(error => console.error("Error", error));
+        });
+    </script>
+</body>
+</html>

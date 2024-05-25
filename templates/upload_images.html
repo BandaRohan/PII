@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        /* Add your specific styles for the upload_images page here */
+
+        /* Container Styles */
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: linear-gradient(135deg, #2bc5e7, #045796); /* Cool blue gradient */
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            padding: 20px;
+            border-radius: 5px; /* Rounded corners for the container */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Box shadow for a subtle lift effect */
+            position: relative; /* Set the container to relative position */
+        }
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 100%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            /* background-image: url("{{ url_for('static', filename='upload4.jpg') }}"); Add your background image URL here */
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        /* Form Styles */
+        form {
+            margin-top: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="file"] {
+            margin-bottom: 10px;
+        }
+
+        input[type="submit"] {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Image Grid Styles */
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            padding: 10px;
+        }
+
+        .image-item {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            overflow: hidden;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+
+        .image-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Maintain aspect ratio and cover the entire container */
+            display: block;
+        }
+
+        /* Image Modal Styles */
+        .image-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            cursor: pointer;
+            border-radius: 5px; /* Rounded corners for the modal */
+        }
+
+        button {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-right: 20px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* Active Button Styles */
+        button.active {
+            background-color: #2980b9;
+            transform: scale(1.1); /* Add a slight scale effect for the active button */
+        }
+        
+        /* Checkbox Styles */
+        .image-checkbox {
+            display: none;
+        }
+        .logo {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 70px; /* Adjust the width as needed */
+            height: auto;
+        }
+        /* Animation for Header */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Apply animation to header */
+        .animated-header {
+            animation: fadeIn 1s ease-in-out;
+        }
+        .header {
+            text-align: center;
+            padding: 20px;
+            background-color: #437495;
+            color: #fff;
+            font-size: 24px;
+            font-weight: bold;
+            border-bottom: 2px solid #2980b9;
+        }
+
+        /* Back button styles */
+        .back-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            text-decoration: none;
+            color: #fff;
+            background-color: #141b20;
+            padding: 10px 15px;
+            border-radius: 5px;
+        }
+
+        .back-button:hover {
+            background-color: #b2b7ba;
+        }
+        .delete-button {
+            background-color: #e74c3c;
+            margin-left: 20px;
+        }
+
+        .delete-button:hover {
+            background-color: #c0392b;
+        }
+
+        /* Fixed position for download and delete buttons */
+        .action-buttons {
+            position: fixed;
+            top: 10px; /* Adjust this value to position the buttons */
+            right: 100px;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    {% include 'menu.html' %}
+    <!-- Logo -->
+    <img src="{{ url_for('static', filename='PII_logo.jpg') }}" alt="Logo" class="logo">
+    
+    <!-- Header -->
+    <div class="header animated-header">
+        PII - Personal Image Identifier
+    </div>
+
+    <div class="container">
+        <!-- Back button with back arrow sign -->
+        
+        <a href="/" class="back-button">Back</a>
+
+        <!-- Add content specific to the upload_images page -->
+        <h2>Upload Images for Group: {{group_name}}</h2>
+        <!-- Container to display the group code -->
+        <div id="shareContainer" style="display: none;"></div>
+
+        
+        <!-- Form for uploading images -->
+        <form method="post" action="/upload_images" enctype="multipart/form-data">
+            <input type="hidden" name="group" value="{{group}}">
+            <label for="images">Select Images:</label>
+            <input type="file" name="images" accept=".png, .jpg, .jpeg" multiple>
+            <input type="submit" value="Upload Images">
+        </form>
+
+        <!-- Display messages or errors -->
+        <!-- Display messages or errors specific to the upload_images page -->
+        <div>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        {% if category == 'upload_images' %}
+                            <p>{{ message }}</p>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+
+        <!-- Button to toggle display of checkboxes -->
+        <button onclick="toggleCheckboxes()">Select</button>
+
+        <!-- Buttons to toggle between "All Photos" and "My Photos" -->
+        <div>
+            <button onclick="showMyPhotos()" id="myPhotosBtn">My Photos</button>
+            <button onclick="showAllPhotos()" id="allPhotosBtn" class="active">All Photos</button>
+            <button onclick="shareGroup('{{ group }}')">Share Group</button>
+        </div>
+
+        <div class="image-grid" id="allPhotosSection">
+            {% for image in images %}
+            <div class="image-item">
+                <input type="checkbox" class="image-checkbox" name="selected_images" value="{{ image['filename'] }}">
+                {% set image_url = url_for('get_uploaded_image', filename=image['filename']) %}
+                <img src="{{ image_url }}" alt="Image" onclick="showImageModal('{{ image_url }}')">
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Display matched images in a grid -->
+        {% if matched_images %}
+        <div class="image-grid" id="myPhotosSection" style="display: none;">
+            {% for matched_image in matched_images %}
+            <div class="image-item">
+                <input type="checkbox" class="image-checkbox" name="selected_images" value="{{ matched_image['filename'] }}">
+                {% set matched_image_url = url_for('get_uploaded_image', filename=matched_image['filename']) %}
+                <img src="{{ matched_image_url }}" alt="Matched Image" onclick="showImageModal('{{ matched_image_url }}')">
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Action buttons for download and delete -->
+    <div class="action-buttons">
+        <form id="downloadForm" action="{{ url_for('download_images') }}" method="post">
+            <input type="hidden" id="selectedImages" name="selectedImages">
+            
+        </form>
+        
+    </div>
+    <div class="action-buttons">
+        <button type="button" id="downloadButton" onclick="downloadSelectedImages()">Download </button>
+            <button onclick="deleteSelectedImages()" class="delete-button">Delete </button>
+    </div>
+
+    <!-- Image Modal -->
+    <div id="imageModal" class="image-modal" onclick="hideImageModal()">
+        <img id="modalContent" class="modal-content">
+    </div>
+
+    <script>
+        // JavaScript functions to show and hide the image modal
+        function showImageModal(imageSrc) {
+            document.getElementById('modalContent').src = imageSrc;
+            document.getElementById('imageModal').style.display = 'flex';
+        }
+
+        function hideImageModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+
+        // JavaScript functions to toggle between "All Photos" and "My Photos"
+        function showAllPhotos() {
+            document.getElementById('allPhotosSection').style.display = 'grid';
+            document.getElementById('myPhotosSection').style.display = 'none';
+            document.getElementById('allPhotosBtn').classList.add('active');
+            document.getElementById('myPhotosBtn').classList.remove('active');
+        }
+
+        function showMyPhotos() {
+            document.getElementById('allPhotosSection').style.display = 'none';
+            document.getElementById('myPhotosSection').style.display = 'grid';
+            document.getElementById('myPhotosBtn').classList.add('active');
+            document.getElementById('allPhotosBtn').classList.remove('active');
+        }
+
+        // Function to toggle display of checkboxes
+        function toggleCheckboxes() {
+            var checkboxes = document.querySelectorAll('.image-checkbox');
+            checkboxes.forEach(function(checkbox) {
+                checkbox.style.display = (checkbox.style.display === 'none' || checkbox.style.display === '') ? 'block' : 'none';
+            });
+        }
+
+        function shareGroup(groupCode) {
+            // Display the unique code for sharing
+            var shareContainer = document.getElementById('shareContainer');
+            // Toggle the display of the group code container
+            if (shareContainer.style.display === 'none' || shareContainer.innerHTML !== "Share this unique code with others: " + groupCode) {
+                // Display the unique code for sharing
+                shareContainer.innerHTML = "Share this unique code with others: " + groupCode;
+                shareContainer.style.display = 'block';
+            } else {
+                // Hide the group code container
+                shareContainer.style.display = 'none';
+            }
+
+            // You can also implement other sharing mechanisms here, such as copying to clipboard or sharing via social media
+        }
+        function downloadSelectedImages() {
+            var selectedImages = [];
+            var checkboxes = document.querySelectorAll('.image-checkbox:checked');
+            checkboxes.forEach(function(checkbox) {
+                selectedImages.push(checkbox.value);
+            });
+
+            if (selectedImages.length === 0) {
+                // If no images are selected, show an alert
+                alert("Please select images to download.");
+            } else {
+                // If images are selected, submit the form
+                document.getElementById('selectedImages').value = JSON.stringify(selectedImages);
+                document.getElementById('downloadForm').submit();
+
+                // Uncheck the selected checkboxes after form submission
+                checkboxes.forEach(function(checkbox) {
+                    checkbox.checked = false;
+                });
+            }
+        }
+
+        function deleteSelectedImages() {
+            var selectedImages = [];
+            var checkboxes = document.querySelectorAll('.image-checkbox:checked');
+            checkboxes.forEach(function(checkbox) {
+                selectedImages.push(checkbox.value);
+            });
+
+            if (selectedImages.length === 0) {
+                // If no images are selected, show an alert
+                alert("Please select images to delete.");
+            } else {
+                // If images are selected, send a request to delete them
+                var confirmation = confirm("Are you sure you want to delete the selected images?");
+                if (confirmation) {
+                    // Send a POST request to the server to delete the selected images
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("POST", "/delete_images", true);
+                    xhr.setRequestHeader("Content-Type", "application/json");
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState === XMLHttpRequest.DONE) {
+                            if (xhr.status === 200) {
+                                // Images deleted successfully
+                                alert("Selected images deleted successfully.");
+                                // Reload the page to reflect the changes
+                                location.reload();
+                            } else {
+                                // Error occurred while deleting images
+                                alert("Error occurred while deleting images. Please try again.");
+                            }
+                        }
+                    };
+                    xhr.send(JSON.stringify({ images: selectedImages }));
+                }
+            }
+        }
+    </script>
+</body>
+</html>

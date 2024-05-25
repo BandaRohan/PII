@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PII - Personal Image Identifier</title>
+    <style>
+        /* Global Styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-image: url("{{ url_for('static', filename='dashboard.jpg') }}");
+            background-color: #f4f4f4;
+            color: #333;
+            position: relative; /* Add this for positioning the logo */
+        }
+
+        /* Header Styles */
+        .header {
+            text-align: center;
+            padding: 20px;
+            background-color: #437495;
+            color: #fff;
+            font-size: 24px;
+            font-weight: bold;
+            border-bottom: 2px solid #2980b9;
+        }
+
+        /* Logo Styles */
+            .logo {
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                width: 70px; /* Adjust the width as needed */
+                height: auto;
+            }
+
+        /* Container Styles */
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: rgba(255, 255, 255, 0.8); /* Transparent white background color */
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Button Styles */
+        .camera-buttons {
+            margin-top: 20px;
+        }
+
+        .camera-buttons button {
+            padding: 10px 20px;
+            margin-right: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .camera-buttons button:hover {
+            background-color: #45a049;
+        }
+
+        /* User Info Styles */
+        .user-info {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .user-info p {
+            margin: 5px 0;
+        }
+
+        /* Animation for Header */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Apply animation to header */
+        .animated-header {
+            animation: fadeIn 1s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Logo -->
+    <img src="{{ url_for('static', filename='PII_logo.jpg') }}" alt="Logo" class="logo">
+    
+    <!-- Header -->
+    <div class="header animated-header">
+        PII - Personal Image Identifier
+    </div>
+
+    <!-- Container -->
+    <div class="container">
+        <!-- Include menu.html -->
+        {% include 'menu.html' %}
+        
+        <!-- Add content specific to the dashboard -->
+        <h2>Welcome, {{ user_info['first_name'] }} {{ user_info['last_name'] }}!</h2>
+
+        <!-- User Info -->
+        <div class="user-info">
+            <p>Username: {{ user_info['username'] }}</p>
+            <p>Email: {{ user_info['email'] }}</p>
+        </div>
+        
+        <!-- Add buttons for starting and stopping the camera -->
+        <div class="camera-buttons">
+            <button id="start-camera" onclick="startCamera()">Start Camera</button>
+            <button id="close-camera" onclick="closeCamera()">Close Camera</button>
+        </div>
+        
+        <!-- Add a video element to display camera feed -->
+    </div>
+
+    <script>
+        function startCamera() {
+            // Open a new popup window
+            var popupWindow = window.open('', '_blank', 'width=800,height=600');
+            
+            // Navigate the popup window to the start_video route
+            popupWindow.location.href = "/start_video";
+        }
+
+        function closeCamera() {
+            // Close the popup window
+            window.close();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!-- menu.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        /* Common Styles for Menu */
+        .menu {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: inline-block;
+            background-color: #333;
+            border-radius: 5px;
+        }
+
+        .menu-btn {
+            cursor: pointer;
+            padding: 10px 15px;
+            color: #fff;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+        }
+
+        .menu-content {
+            display: none;
+            position: absolute;
+            background-color: #333;
+            border-radius: 5px;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .menu-item {
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            color: #fff;
+        }
+
+        .menu-item:hover {
+            background-color: #555;
+        }
+
+        .disabled {
+            color: #888;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="menu">
+        <span class="menu-btn" onclick="showMenu()">Menu &#9662;</span>
+        <div class="menu-content">
+            <a href="/" class="menu-item">Home</a>
+            <a href="/dashboard" class="menu-item">Dashboard</a>
+            <a href="/profile_info" class="menu-item">Profile Info</a>
+            
+            
+            <!-- Check if the user is logged in before displaying registration and login links -->
+            {% if 'username' not in session %}
+                <a href="/login" class="menu-item">Login</a>
+                <a href="/signup" class="menu-item">Registration</a>
+            {% else %}
+                <span class="menu-item disabled">Login (Logout first)</span>
+                <span class="menu-item disabled">Registration (Logout first)</span>
+            {% endif %}
+            
+            <a href="/logout" class="menu-item">Logout</a>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript function to show menu dropdown
+        function showMenu() {
+            var menuContent = document.querySelector('.menu-content');
+            menuContent.style.display = menuContent.style.display === 'block' ? 'none' : 'block';
+        }
+    </script>
+</body>
+</html>
