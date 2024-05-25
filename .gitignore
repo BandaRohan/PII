@@ -170,7 +170,6 @@ test.py
 testing.py
 try.py
 app.py
-*.json
-
+serviceAccountKey.json
 /Scripts
 
